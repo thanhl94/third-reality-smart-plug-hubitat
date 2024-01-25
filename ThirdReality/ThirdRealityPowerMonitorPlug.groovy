@@ -154,7 +154,7 @@ void logsOff() {
  */
 List<String> off() {
     if (settings.disableOnOff) { return [] }
-    if (settings.txtEnable) { log.info 'turn off' }
+    if (settings.txtEnable) { log.info "${device} turned off" }
     scheduleCommandTimeoutCheck()
     state.isDigital = true
     return zigbee.off()
@@ -166,7 +166,7 @@ List<String> off() {
  */
 List<String> on() {
     if (settings.disableOnOff) { return [] }
-    if (settings.txtEnable) { log.info 'turn on' }
+    if (settings.txtEnable) { log.info "${device} turned on" }
     scheduleCommandTimeoutCheck()
     state.isDigital = true
     return zigbee.on()
@@ -254,7 +254,7 @@ List<String> refresh() {
  */
 List<String> toggle() {
     if (settings.disableOnOff) { return [] }
-    if (settings.txtEnable) { log.info 'toggle' }
+    if (settings.txtEnable) { log.info "${device} toggle" }
     scheduleCommandTimeoutCheck()
     state.isDigital = true
     return zigbee.command(zigbee.ON_OFF_CLUSTER, 0x02, [:], 0)
