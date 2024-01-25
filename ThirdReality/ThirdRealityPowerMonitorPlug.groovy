@@ -19,6 +19,11 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
+ *
+ *
+ *
+ *
+ *  2024-01-24 thanhl94 - prevent log warn when 0x0510 is received and will only log when debug is enabled
  */
 
 import groovy.transform.Field
@@ -394,6 +399,9 @@ void parseElectricalMeasureCluster(final Map descMap) {
         case ACTIVE_POWER_ID:
             handleActivePowerValue(value)
             break
+        case POWER_FACTOR_ID:
+            handlePowerFactorValue(value)
+            break
         case RMS_VOLTAGE_ID:
             handleRmsVoltageValue(value)
             break
@@ -401,6 +409,22 @@ void parseElectricalMeasureCluster(final Map descMap) {
             log.warn "${device} zigbee received unknown Electrical Measurement cluster attribute 0x${descMap.attrId} (value ${descMap.value})"
             break
     }
+}
+
+
+/**
+ * Handle Power Factor (Only display when debug is enabled)
+ * @param value The new power factor Value
+ */
+void handlePowerFactorValue(final long value) {
+    // Reduce log warn when receiving cluster 0x0510 (Power Factor)
+    // If a low/idle device plugged into the switch.
+    // then it will send value ranging from 0 to ~25 from my observation
+
+    if (settings.logEnable) {
+        log.debug "${device} zigbee received Power Factor Value from cluster attribute 0x0510 (value ${value})"
+    }
+    return
 }
 
 /**
@@ -796,6 +820,7 @@ private void updatePowerFactor() {
 @Field static final int POWER_RESTORE_ID = 0x4003
 @Field static final int RMS_CURRENT_ID = 0x0508
 @Field static final int RMS_VOLTAGE_ID = 0x0505
+@Field static final int POWER_FACTOR_ID = 0x0510
 @Field static final int METERING_UNIT_OF_MEASURE_ID = 0x0300
 @Field static final int METERING_DIVISOR_ID = 0x0302
 @Field static final int METERING_SUMMATION_FORMATTING_ID = 0x0303
